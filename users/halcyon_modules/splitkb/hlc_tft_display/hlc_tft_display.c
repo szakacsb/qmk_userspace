@@ -46,8 +46,8 @@ painter_device_t lcd_surface;
 
 led_t last_led_usb_state = {0};
 layer_state_t last_layer_state = {0};
-uint8_t osm_mods = 0
-uint8_t last_osm_mods = 0
+uint8_t osm_mods = 0;
+uint8_t last_osm_mods = 0;
 
 #define GRID_WIDTH 27
 #define GRID_HEIGHT 48
@@ -187,7 +187,7 @@ void add_cell_cluster() {
 }
 
 void oneshot_mods_changed_user(uint8_t mods) {
-	osm_mods = mods
+	osm_mods = mods;
 }
 
 void update_display(void) {
