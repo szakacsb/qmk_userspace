@@ -23,15 +23,11 @@
 #include "graphics/numbers/9.qgf.h"
 #include "graphics/numbers/undef.qgf.h"
 
-static const char *caps =        "Caps";
-static const char *layer_1 =     "HRM";
-static const char *layer_2 =     "Nav+";
-static const char *layer_3 =     "Func";
-
-static const char *osm_alt =     "Alt";
-static const char *osm_ctrl =    "Ctr";
-static const char *osm_gui =     "GUI";
-static const char *osm_shift =   "Sft";
+static const char *caps =           "Caps";
+static const char *layer_th =       "Tap-H";
+static const char *layer_func =     "Func";
+static const char *layer_settings = "Stng";
+static const char *layer_totem =    "IMode";
 
 static painter_font_handle_t Retron27;
 static painter_font_handle_t Retron27_underline;
@@ -185,10 +181,6 @@ void add_cell_cluster() {
     }
 }
 
-void oneshot_mods_changed_user(uint8_t mods) {
-	osm_mods = mods;
-}
-
 void update_display(void) {
     static bool first_run_led = false;
     static bool first_run_layer = false;
@@ -198,15 +190,6 @@ void update_display(void) {
         Retron27 = qp_load_font_mem(font_Retron2000_27);
         Retron27_underline = qp_load_font_mem(font_Retron2000_underline_27);
     }
-	
-	if(last_osm_mods != osm_mods) {
-		osm_mods & MOD_MASK_SHIFT ? qp_drawtext_recolor(lcd_surface, 5, LCD_HEIGHT - Retron27->line_height * 5 - 25,      Retron27_underline, osm_shift, HSV_LAYER_0, HSV_BLACK) : qp_drawtext_recolor(lcd_surface, 5, LCD_HEIGHT - Retron27->line_height * 5 - 25,      Retron27, osm_shift, HSV_BLACK, HSV_BLACK);
-		osm_mods & MOD_MASK_ALT ? qp_drawtext_recolor(lcd_surface, 65, LCD_HEIGHT - Retron27->line_height * 5 - 25,      Retron27_underline, osm_alt, HSV_LAYER_1, HSV_BLACK) : qp_drawtext_recolor(lcd_surface, 65, LCD_HEIGHT - Retron27->line_height * 5 - 25,      Retron27, osm_alt, HSV_BLACK, HSV_BLACK);
-		osm_mods & MOD_MASK_CTRL ? qp_drawtext_recolor(lcd_surface, 5, LCD_HEIGHT - Retron27->line_height * 6 - 30,      Retron27_underline, osm_ctrl, HSV_LAYER_2, HSV_BLACK) : qp_drawtext_recolor(lcd_surface, 5, LCD_HEIGHT - Retron27->line_height * 6 - 30,      Retron27, osm_ctrl, HSV_BLACK, HSV_BLACK);
-		osm_mods & MOD_MASK_GUI ? qp_drawtext_recolor(lcd_surface, 65, LCD_HEIGHT - Retron27->line_height * 6 - 30,      Retron27_underline, osm_gui, HSV_LAYER_3, HSV_BLACK) : qp_drawtext_recolor(lcd_surface, 65, LCD_HEIGHT - Retron27->line_height * 6 - 30,      Retron27, osm_gui, HSV_BLACK, HSV_BLACK);
-		
-		last_osm_mods = osm_mods;
-	}
 
     if(last_led_usb_state.raw != host_keyboard_led_state().raw || first_run_led == false) {
         led_t led_usb_state = host_keyboard_led_state();
@@ -218,9 +201,10 @@ void update_display(void) {
     }
 
     if(last_layer_state != layer_state || first_run_layer == false) {
-        layer_state_cmp(layer_state, 1)   ? qp_drawtext_recolor(lcd_surface, 5, LCD_HEIGHT - Retron27->line_height * 2 - 10, Retron27_underline, layer_1,   HSV_LAYER_1_ON,   HSV_BLACK) : qp_drawtext_recolor(lcd_surface, 5, LCD_HEIGHT - Retron27->line_height * 2 - 10, Retron27, layer_1,   HSV_LAYER_1_OFF,   HSV_BLACK);
-        layer_state_cmp(layer_state, 2)   ? qp_drawtext_recolor(lcd_surface, 5, LCD_HEIGHT - Retron27->line_height * 3 - 15, Retron27_underline, layer_2,   HSV_LAYER_2_ON,   HSV_BLACK) : qp_drawtext_recolor(lcd_surface, 5, LCD_HEIGHT - Retron27->line_height * 3 - 15, Retron27, layer_2,   HSV_LAYER_2_OFF,   HSV_BLACK);
-		layer_state_cmp(layer_state, 3)   ? qp_drawtext_recolor(lcd_surface, 5, LCD_HEIGHT - Retron27->line_height * 4 - 20, Retron27_underline, layer_3,   HSV_LAYER_3_ON,   HSV_BLACK) : qp_drawtext_recolor(lcd_surface, 5, LCD_HEIGHT - Retron27->line_height * 4 - 20, Retron27, layer_3,   HSV_LAYER_3_OFF,   HSV_BLACK);
+        ((layer_state_cmp(layer_state, 1) && !layer_state_cmp(layer_state, 4)) || (layer_state_cmp(layer_state, 6) && layer_state_cmp(layer_state, 4))) ? qp_drawtext_recolor(lcd_surface, 5, LCD_HEIGHT - Retron27->line_height * 2 - 10, Retron27_underline, layer_th,   HSV_LAYER_TH_ON,   HSV_BLACK) : qp_drawtext_recolor(lcd_surface, 5, LCD_HEIGHT - Retron27->line_height * 2 - 10, Retron27, layer_th,   HSV_LAYER_TH_OFF,   HSV_BLACK);
+        ((layer_state_cmp(layer_state, 2) && !layer_state_cmp(layer_state, 4)) || (layer_state_cmp(layer_state, 5) && layer_state_cmp(layer_state, 4))) ? qp_drawtext_recolor(lcd_surface, 5, LCD_HEIGHT - Retron27->line_height * 3 - 15, Retron27_underline, layer_func,   HSV_LAYER_FUNC_ON,   HSV_BLACK) : qp_drawtext_recolor(lcd_surface, 5, LCD_HEIGHT - Retron27->line_height * 3 - 15, Retron27, layer_func,   HSV_LAYER_FUNC_OFF,   HSV_BLACK);
+		((layer_state_cmp(layer_state, 3) && !layer_state_cmp(layer_state, 4)) || (layer_state_cmp(layer_state, 7) && layer_state_cmp(layer_state, 4)))   ? qp_drawtext_recolor(lcd_surface, 5, LCD_HEIGHT - Retron27->line_height * 4 - 20, Retron27_underline, layer_settings,   HSV_LAYER_SETTINGS_ON,   HSV_BLACK) : qp_drawtext_recolor(lcd_surface, 5, LCD_HEIGHT - Retron27->line_height * 4 - 20, Retron27, layer_settings,   HSV_LAYER_SETTINGS_OFF,   HSV_BLACK);
+		layer_state_cmp(layer_state, 4)   ? qp_drawtext_recolor(lcd_surface, 5, LCD_HEIGHT - Retron27->line_height * 5 - 25, Retron27_underline, layer_totem,   HSV_LAYER_TOTEM_ON,   HSV_BLACK) : qp_drawtext_recolor(lcd_surface, 5, LCD_HEIGHT - Retron27->line_height * 5 - 25, Retron27, layer_totem,   HSV_LAYER_TOTEM_OFF,   HSV_BLACK);
 		
         last_layer_state = layer_state;
         first_run_layer = true;
